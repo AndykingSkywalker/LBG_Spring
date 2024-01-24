@@ -3,6 +3,8 @@ package com.lbg.demo.rest;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,9 +21,12 @@ public class PetController {
 	private List<Pet> pets = new ArrayList<>();
 
 	@PostMapping("/create")
-	public String createPet(@RequestBody Pet newPet) {
+	public ResponseEntity<Pet> createPet(@RequestBody Pet newPet) {
 		this.pets.add(newPet);
-		return pets.toString();
+
+		Pet body = this.pets.get(this.pets.size() - 1);
+
+		return new ResponseEntity<Pet>(body, HttpStatus.CREATED);
 	}
 
 	@GetMapping("/get")
@@ -30,8 +35,13 @@ public class PetController {
 	}
 
 	@GetMapping("/get/{id}")
-	public Pet getPet(@PathVariable int id) {
-		return this.pets.get(id);
+	public ResponseEntity<Pet> getPet(@PathVariable int id) {
+		if (id < 0 || id >= this.pets.size()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		Pet found = this.pets.get(id);
+
+		return ResponseEntity.ok(found);
 	}
 
 	@PatchMapping("/patch/{id}")
