@@ -3,7 +3,6 @@ package com.lbg.demo.rest;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,48 +13,43 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lbg.demo.domain.Pet;
+import com.lbg.demo.services.PetServices;
 
 @RestController
 public class PetController {
+
+	private PetServices service;
+
+	public PetController(PetServices service) {
+		super();
+		this.service = service;
+	}
 
 	private List<Pet> pets = new ArrayList<>();
 
 	@PostMapping("/create")
 	public ResponseEntity<Pet> createPet(@RequestBody Pet newPet) {
-		this.pets.add(newPet);
-
-		Pet body = this.pets.get(this.pets.size() - 1);
-
-		return new ResponseEntity<Pet>(body, HttpStatus.CREATED);
+		return this.service.createPet(newPet);
 	}
 
 	@GetMapping("/get")
 	public List<Pet> getPets() {
-		return pets;
+		return this.service.getPets();
 	}
 
 	@GetMapping("/get/{id}")
 	public ResponseEntity<Pet> getPet(@PathVariable int id) {
-		if (id < 0 || id >= this.pets.size()) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		Pet found = this.pets.get(id);
-
-		return ResponseEntity.ok(found);
+		return this.service.getPet(id);
 	}
 
 	@PatchMapping("/patch/{id}")
 	public Pet patchPet(@PathVariable int id, @RequestBody Pet petDetails) {
-		Pet pet = this.pets.get(id);
-		pet.setName(petDetails.getName());
-		pet.setAge(petDetails.getAge());
-		return pet;
+		return this.service.patchPet(id, petDetails);
 	}
 
 	@DeleteMapping("/delete/{id}")
 	public String deletePet(@PathVariable int id) {
-		Pet pet = this.pets.remove(id);
-		return "Deleted pet: " + pet;
+		return this.service.deletePet(id);
 	}
 
 }
