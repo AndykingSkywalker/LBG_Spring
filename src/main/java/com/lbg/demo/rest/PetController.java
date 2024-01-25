@@ -1,6 +1,5 @@
 package com.lbg.demo.rest;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -25,8 +24,6 @@ public class PetController {
 		this.service = service;
 	}
 
-	private List<Pet> pets = new ArrayList<>();
-
 	@PostMapping("/create")
 	public ResponseEntity<Pet> createPet(@RequestBody Pet newPet) {
 		return this.service.createPet(newPet);
@@ -43,12 +40,12 @@ public class PetController {
 	}
 
 	@PatchMapping("/patch/{id}")
-	public Pet patchPet(@PathVariable int id, @RequestBody Pet petDetails) {
+	public ResponseEntity<Pet> patchPet(@PathVariable int id, @RequestBody Pet petDetails) {
 		return this.service.patchPet(id, petDetails);
 	}
 
 	@DeleteMapping("/delete/{id}")
-	public String deletePet(@PathVariable int id) {
+	public boolean deletePet(@PathVariable int id) {
 		return this.service.deletePet(id);
 	}
 

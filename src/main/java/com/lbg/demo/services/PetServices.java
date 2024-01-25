@@ -1,50 +1,72 @@
 package com.lbg.demo.services;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.lbg.demo.domain.Pet;
+import com.lbg.demo.repos.PetRepo;
 
 @Service
 public class PetServices {
 
-	private List<Pet> pets = new ArrayList<>();
+	private PetRepo repo;
+
+	public PetServices(PetRepo repo) {
+		super();
+		this.repo = repo;
+	}
 
 	public ResponseEntity<Pet> createPet(Pet newPet) {
-		this.pets.add(newPet);
-
-		Pet body = this.pets.get(this.pets.size() - 1);
-
-		return new ResponseEntity<Pet>(body, HttpStatus.CREATED);
+		Pet created = this.repo.save(newPet);
+		return new ResponseEntity<Pet>(created, HttpStatus.CREATED);
 	}
 
 	public List<Pet> getPets() {
-		return pets;
+		return this.repo.findAll();
 	}
 
 	public ResponseEntity<Pet> getPet(int id) {
-		if (id < 0 || id >= this.pets.size()) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+		Optional<Pet> found = this.repo.findById(id);
+
+		if (found.isEmpty()) {
+			return new ResponseEntity<Pet>(HttpStatus.NOT_FOUND);
 		}
-		Pet found = this.pets.get(id);
+		Pet body = found.get();
 
-		return ResponseEntity.ok(found);
+		return ResponseEntity.ok(body);
+
 	}
 
-	public Pet patchPet(int id, Pet petDetails) {
-		Pet pet = this.pets.get(id);
-		pet.setName(petDetails.getName());
-		pet.setAge(petDetails.getAge());
-		return pet;
+	public ResponseEntity<Pet> patchPet(int id, Pet petDetails) {
+		Optional<Pet> found = this.repo.findById(id);
+
+		if (found.isEmpty()) {
+			return new ResponseEntity<Pet>(HttpStatus.NOT_FOUND);
+		}
+		Pet existing = found.get();
+
+		if (petDetails.getName() != null) {
+			existing.setName(petDetails.getName());
+		}
+
+		if (petDetails.getAge() != null) {
+			existing.setAge(petDetails.getAge());
+		}
+
+		Pet updated = this.repo.save(existing);
+
+		return ResponseEntity.ok(updated);
 	}
 
-	public String deletePet(int id) {
-		Pet pet = this.pets.remove(id);
-		return "Deleted pet: " + pet;
+	public boolean deletePet(int id) {
+		this.repo.deleteById(id);
+
+		return !this.repo.existsById(id);
 	}
 
 }
