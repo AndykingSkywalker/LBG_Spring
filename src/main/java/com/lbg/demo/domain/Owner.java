@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Owner {
@@ -15,6 +16,17 @@ public class Owner {
 	private String name;
 
 	private String location;
+
+	@ManyToOne
+	private Pet pet;
+
+	public Pet getPet() {
+		return pet;
+	}
+
+	public void setPet(Pet pet) {
+		this.pet = pet;
+	}
 
 	public Owner() {
 		super();
