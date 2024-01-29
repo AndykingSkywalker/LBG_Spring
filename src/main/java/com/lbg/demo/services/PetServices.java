@@ -58,6 +58,10 @@ public class PetServices {
 			existing.setAge(petDetails.getAge());
 		}
 
+		if (petDetails.getOwner() != null) {
+			existing.setOwner(petDetails.getOwner());
+		}
+
 		Pet updated = this.repo.save(existing);
 
 		return ResponseEntity.ok(updated);

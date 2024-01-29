@@ -1,9 +1,12 @@
 package com.lbg.demo.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Pet {
@@ -15,6 +18,10 @@ public class Pet {
 	private String name;
 
 	private Integer age;
+
+	@JsonBackReference
+	@ManyToOne
+	private Owner owner;
 
 	public Pet() {
 		super();
@@ -44,9 +51,12 @@ public class Pet {
 		return this.age = age;
 	}
 
-	@Override
-	public String toString() {
-		return "Pet [name=" + name + ", age=" + age + "]";
+	public Owner getOwner() {
+		return owner;
+	}
+
+	public void setOwner(Owner owner) {
+		this.owner = owner;
 	}
 
 }
